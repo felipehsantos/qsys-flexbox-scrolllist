@@ -139,7 +139,17 @@ function GetControls(props)
   	UserPin 	     = true,
   	PinStyle 	     = "Both",
   	Count          = 1	
-  	}
+  	},
+  	{
+  	Name           	= "MaxValueScroll",
+  	ControlType    	= "Knob",
+  	ControlUnit     = "Integer",
+  	Max				      = 200,
+  	Min				      = 1,
+  	UserPin 	      = true,
+  	PinStyle 	      = "Output",
+  	Count          = 1
+  	},
   }
   return ctrls
 end
@@ -260,6 +270,14 @@ function GetControlLayout(props)
         FontSize = 11,
         HTextAlign = "Left"
       })
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "Max Value Scroll Bar",
+        Position = {85,381},
+        Size = {112,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
   --CONTROLS ----
       layout["InterfaceName"] = {
   	  PrettyName = "UCI Controller",
@@ -341,6 +359,15 @@ function GetControlLayout(props)
   	  Size = {18,92}
   	  --Color = {0,0,0\}
   	}
+      layout["MaxValueScroll"] = {
+  	  PrettyName = "Max Value Scroll Bar",
+  	  Style = "Text",
+  	  --Legend =""..btsidx,
+  	  Position = {197,381},
+  	  Size = {90,16},
+      IsReadOnly = true
+  	  --Color = {0,0,0\}
+  	}
   elseif CurrentPage == "About" then
   	  table.insert(graphics,{
         Type = "GroupBox",
@@ -364,7 +391,7 @@ function GetControlLayout(props)
         Type = "Text",
         Text = "https://github.com/felipehsantos/qsys-flexbox-scrolllist",
         Position = {13,131},
-        Size = {255,16},
+        Size = {335,27},
         FontSize = 11,
   	  Font="Roboto",
   	  FontStyle="Regular",
@@ -382,7 +409,8 @@ if Controls then
   scrollBar   = Controls.ScrollBar            
   scrollMeter = Controls.ScrollMeter
   firstPage   = Controls.FirstPage
-  lastPage    = Controls.LastPage          
+  lastPage    = Controls.LastPage
+  maxValueScrollInfo = Controls.MaxValueScroll          
   
   MAX_VISIBLE_ITEMS = Controls.MaxVisibleItems   -- DEFINES THE MAX BUTTON CAN BE VISIBLE INSIDE THE FLEX BOX 
   TOTAL_ITEMS       = Controls.TotalItems        -- TOTAL AMOUNT BUTTONS IS INSIDE THE FLEXBOX
@@ -425,6 +453,7 @@ if Controls then
   
   function init()
     maxScrollPosition = TOTAL_ITEMS.Value - MAX_VISIBLE_ITEMS.Value + 1
+    maxValueScrollInfo.Value = maxScrollPosition
     --print("SET THE UCI KNOB PROPERTIES MAX VALUE to "..maxScrollPosition)
     setScrollPosition(currentScrollPosition)
   end

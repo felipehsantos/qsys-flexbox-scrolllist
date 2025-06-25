@@ -4,7 +4,8 @@ scrollDown  = Controls.ScrollButtons[2]
 scrollBar   = Controls.ScrollBar            
 scrollMeter = Controls.ScrollMeter
 firstPage   = Controls.FirstPage
-lastPage    = Controls.LastPage          
+lastPage    = Controls.LastPage
+maxValueScrollInfo = Controls.MaxValueScroll          
 
 MAX_VISIBLE_ITEMS = Controls.MaxVisibleItems   -- DEFINES THE MAX BUTTON CAN BE VISIBLE INSIDE THE FLEX BOX 
 TOTAL_ITEMS       = Controls.TotalItems        -- TOTAL AMOUNT BUTTONS IS INSIDE THE FLEXBOX
@@ -47,6 +48,7 @@ end
 
 function init()
   maxScrollPosition = TOTAL_ITEMS.Value - MAX_VISIBLE_ITEMS.Value + 1
+  maxValueScrollInfo.Value = maxScrollPosition
   --print("SET THE UCI KNOB PROPERTIES MAX VALUE to "..maxScrollPosition)
   setScrollPosition(currentScrollPosition)
 end

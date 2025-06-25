@@ -76,5 +76,15 @@ local ctrls = {
 	UserPin 	     = true,
 	PinStyle 	     = "Both",
 	Count          = 1	
-	}
+	},
+	{
+	Name           	= "MaxValueScroll",
+	ControlType    	= "Knob",
+	ControlUnit     = "Integer",
+	Max				      = 200,
+	Min				      = 1,
+	UserPin 	      = true,
+	PinStyle 	      = "Output",
+	Count          = 1
+	},
 }

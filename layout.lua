@@ -110,6 +110,14 @@ if CurrentPage == "Control" then
       FontSize = 11,
       HTextAlign = "Left"
     })
+	table.insert(graphics,{
+      Type = "Text",
+      Text = "Max Value Scroll Bar",
+      Position = {85,381},
+      Size = {112,16},
+      FontSize = 11,
+      HTextAlign = "Left"
+    })
 --CONTROLS ----
     layout["InterfaceName"] = {
 	  PrettyName = "UCI Controller",
@@ -191,6 +199,15 @@ if CurrentPage == "Control" then
 	  Size = {18,92}
 	  --Color = {0,0,0\}
 	}
+    layout["MaxValueScroll"] = {
+	  PrettyName = "Max Value Scroll Bar",
+	  Style = "Text",
+	  --Legend =""..btsidx,
+	  Position = {197,381},
+	  Size = {90,16},
+    IsReadOnly = true
+	  --Color = {0,0,0\}
+	}
 elseif CurrentPage == "About" then
 	  table.insert(graphics,{
       Type = "GroupBox",
@@ -214,7 +231,7 @@ elseif CurrentPage == "About" then
       Type = "Text",
       Text = "https://github.com/felipehsantos/qsys-flexbox-scrolllist",
       Position = {13,131},
-      Size = {255,16},
+      Size = {335,27},
       FontSize = 11,
 	  Font="Roboto",
 	  FontStyle="Regular",
