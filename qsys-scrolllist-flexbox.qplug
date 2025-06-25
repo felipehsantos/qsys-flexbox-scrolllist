@@ -1,0 +1,489 @@
+--[[
+    This Lua script implements functionality similar to a dynamic scrollable list inside a Flexbox.
+    It mimics pagination or a sliding window.
+    Felipe H 
+    v0.0.1 06/18/2025
+    v0.0.2 06/23/2025
+]]
+
+PluginInfo = {
+  Name = "Qsys Scroll List Flexbox",
+  Version = "0.1",
+  BuildVersion = "0.0.0.0",
+  Id = "33715f5d-fc09-407b-8128-8f7d0271eb65",
+  Author = "Felipe Santos",
+  Description = "Implement a scroll list inside flexbox",
+  Name = "FHS Plugins~UCI~Scroll List Flexbox" 
+}
+
+-- Define the color of the plugin object in the design
+function GetColor(props)
+  return { 102, 102, 102 }
+end
+
+-- The name that will initially display when dragged into a design
+function GetPrettyName(props)
+  return "Scroll List, version " .. PluginInfo.Version
+end
+
+-- Optional function used if plugin has multiple pages
+PageNames = { "Control", "About" }  --List the pages within the plugin
+function GetPages(props)
+  local pages = {}
+  for ix,name in ipairs(PageNames) do
+    table.insert(pages, {name = PageNames[ix]})
+  end
+  return pages
+end
+-- Optional function to define model if plugin supports more than one model
+function GetModel(props)
+  local model = {}
+ return model
+end
+
+-- Define User configurable Properties of the plugin
+function GetProperties()
+  local props = {}
+  return props
+end
+
+-- Optional function to define pins on the plugin that are not connected to a Control
+function GetPins(props)
+  local pins = {}
+  return pins
+end
+
+-- Optional function to update available properties when properties are altered by the user
+function RectifyProperties(props)
+  return props
+end
+
+-- Defines the Controls used within the plugin
+function GetControls(props)
+  local ctrls = {}
+  local ctrls = {
+  {
+  	Name 			    = "InterfaceName",
+  	ControlType 	= "Text",
+  	UserPin 	    = true,
+  	PinStyle 	    = "Both",
+  	Count 			  = 1
+  	},
+  	{
+  	Name           	= "MaxVisibleItems",
+  	ControlType    	= "Knob",
+  	ControlUnit     = "Integer",
+  	Max				      = 200,
+  	Min				      = 1,
+  	UserPin 	      = true,
+  	PinStyle 	      = "Both",
+  	Count          = 1
+  	},
+  	{
+  	Name           	= "TotalItems",
+  	ControlType    	= "Knob",
+  	ControlUnit     = "Integer",
+  	Max				      = 200,
+  	Min				      = 1,
+  	UserPin 	      = true,
+  	PinStyle 	      = "Both",
+  	Count          = 1
+  	},
+  	{
+  	Name 			    = "ControlPrefix",
+  	ControlType 	= "Text",
+  	UserPin 	    = true,
+  	PinStyle 	    = "Both",
+  	Count 			  = 1
+  	},
+  	{
+  	Name           	= "ScrollBar",
+  	ControlType    	= "Knob",
+  	ControlUnit     = "Integer",
+  	Max				      = 100,
+  	Min				      = 1,
+  	UserPin 	      = true,
+  	PinStyle 	      = "Both",
+  	Count          = 1
+  	},
+  	{
+  	Name           	= "ScrollMeter",
+  	ControlType    	= "Knob",
+  	ControlUnit     = "Integer",
+  	Max				      = 100,
+  	Min				      = 1,
+  	UserPin 	      = true,
+  	PinStyle 	      = "Both",
+  	Count          = 1
+  	},
+  	{
+  	Name           = "ScrollButtons",
+  	ControlType    = "Button",
+  	ButtonType     = "Momentary",
+  	UserPin 	     = true,
+  	PinStyle 	     = "Both",
+  	Count          = 2	
+  	},
+  	{
+  	Name           = "FirstPage",
+  	ControlType    = "Button",
+  	ButtonType     = "Momentary",
+  	UserPin 	     = true,
+  	PinStyle 	     = "Both",
+  	Count          = 1	
+  	},
+    {
+  	Name           = "LastPage",
+  	ControlType    = "Button",
+  	ButtonType     = "Momentary",
+  	UserPin 	     = true,
+  	PinStyle 	     = "Both",
+  	Count          = 1	
+  	}
+  }
+  return ctrls
+end
+
+--Layout of controls and graphics for the plugin UI to display
+function GetControlLayout(props)
+  local layout = {}
+  local graphics = {}
+  local CurrentPage = PageNames[props["page_index"].Value]
+  if CurrentPage == "Control" then
+     table.insert(graphics,{
+        Type = "GroupBox",
+  --      Text = "Control",
+        Fill = {200,200,200},
+        StrokeWidth = 0,
+        Position = {0,0},
+        Size = {360,410}
+      })
+     table.insert(graphics,{
+        Type = "Label",
+        Text = "Flexbox Scroll List",
+        FontSize = 25,
+        Font="Roboto",
+        FontStyle="Black",
+        Color={0,0,0},
+        Fill = {0,0,0,0},
+        StrokeWidth = 0,
+        Position = {0,0},
+        Size = {360,41}
+      })	
+  --HEADERS----------------------------------------
+  	table.insert(graphics,{
+        Type = "Header",
+        Text = "Setup",
+        Position = {12,65},
+        Size = {330,14},
+        FontSize = 14,
+        HTextAlign = "Center"
+      })
+  	table.insert(graphics,{
+        Type = "Header",
+        Text = "Controls",
+        Position = {12,180},
+        Size = {330,14},
+        FontSize = 14,
+        HTextAlign = "Center"
+      })
+  --TEXTs--------------------------------------
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "UCI Controller:",
+        Position = {69,96},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "Max Visible Items:",
+        Position = {69,112},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "Total Items:",
+        Position = {69,128},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "Control Prefix:",
+        Position = {69,144},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "First Page",
+        Position = {85,213},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "Up Page",
+        Position = {85,229},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "Scroll Bar & Scroll Meter",
+        Position = {85,281},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "Down Page",
+        Position = {85,337},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      }) 
+  	table.insert(graphics,{
+        Type = "Text",
+        Text = "LastPage",
+        Position = {85,353},
+        Size = {128,16},
+        FontSize = 11,
+        HTextAlign = "Left"
+      })
+  --CONTROLS ----
+      layout["InterfaceName"] = {
+  	  PrettyName = "UCI Controller",
+  	  Style = "ComboBox",
+  	  --Legend =""..btsidx,
+  	  Position = {197,96},
+  	  Size = {90,16}
+  	  --Color = {0,0,0\}
+  	}
+      layout["MaxVisibleItems"] = {
+  	  PrettyName = "Max Visible Items",
+  	  Style = "Text",
+  	  --Legend =""..btsidx,
+  	  Position = {197,112},
+  	  Size = {90,16}
+  	  --Color = {0,0,0\}
+  	}
+      layout["TotalItems"] = {
+  	  PrettyName = "Total Items",
+  	  Style = "Text",
+  	  --Legend =""..btsidx,
+  	  Position = {197,128},
+  	  Size = {90,16}
+  	  --Color = {0,0,0\}
+  	}
+      layout["ControlPrefix"] = {
+  	  PrettyName = "Control Prefix",
+  	  Style = "Text",
+  	  --Legend =""..btsidx,
+  	  Position = {197,144},
+  	  Size = {90,16}
+  	  --Color = {0,0,0\}
+  	}
+      layout["FirstPage"] = {
+        PrettyName = "First Page",
+        Style = "Button",
+        --Legend =""..btsidx,
+        Position = {213,213},
+        Size = {54,16}
+        --Color = {0,0,0}
+    }
+      layout["LastPage"] = {
+        PrettyName = "Last Page",
+        Style = "Button",
+        --Legend =""..btsidx,
+        Position = {213,353},
+        Size = {54,16}
+        --Color = {0,0,0}
+    }
+      layout["ScrollButtons 1"] = {
+        PrettyName = "Scroll Button Up",
+        Style = "Button",
+        --Legend =""..btsidx,
+        Position = {213,229},
+        Size = {54,16}
+        --Color = {0,0,0}
+    }
+      layout["ScrollButtons 2"] = {
+        PrettyName = "Scroll Button Down",
+        Style = "Button",
+        --Legend =""..btsidx,
+        Position = {213,337},
+        Size = {54,16}
+        --Color = {0,0,0}
+    }
+      layout["ScrollBar"] = {
+  	  PrettyName = "Scroll Bar",
+  	  Style = "Fader",
+  	  --Legend =""..btsidx,
+  	  Position = {213,245},
+  	  Size = {36,92}
+  	  --Color = {0,0,0\}
+  	}
+      layout["ScrollMeter"] = {
+  	  PrettyName = "Scroll Meter",
+  	  Style = "Meter",
+  	  --Legend =""..btsidx,
+  	  Position = {249,245},
+  	  Size = {18,92}
+  	  --Color = {0,0,0\}
+  	}
+  elseif CurrentPage == "About" then
+  	  table.insert(graphics,{
+        Type = "GroupBox",
+  	--Text = "Control",
+        Fill = {200,200,200},
+        StrokeWidth = 0,
+        Position = {0,0},
+        Size = {360,290}
+      })
+  	  table.insert(graphics,{
+        Type = "Text",
+        Text = "documentation on github",
+        Position = {13,115},
+        Size = {148,16},
+        FontSize = 11,
+  	  Font="Roboto",
+  	  FontStyle="Regular",
+        HTextAlign = "Left"
+      })
+  	  table.insert(graphics,{
+        Type = "Text",
+        Text = "https://github.com/felipehsantos/qsys-flexbox-scrolllist",
+        Position = {13,131},
+        Size = {255,16},
+        FontSize = 11,
+  	  Font="Roboto",
+  	  FontStyle="Regular",
+        HTextAlign = "Left"
+      })
+  end
+  return layout, graphics
+end
+
+--Start event based logic
+if Controls then
+  
+  scrollUp    = Controls.ScrollButtons[1]      
+  scrollDown  = Controls.ScrollButtons[2]       
+  scrollBar   = Controls.ScrollBar            
+  scrollMeter = Controls.ScrollMeter
+  firstPage   = Controls.FirstPage
+  lastPage    = Controls.LastPage          
+  
+  MAX_VISIBLE_ITEMS = Controls.MaxVisibleItems   -- DEFINES THE MAX BUTTON CAN BE VISIBLE INSIDE THE FLEX BOX 
+  TOTAL_ITEMS       = Controls.TotalItems        -- TOTAL AMOUNT BUTTONS IS INSIDE THE FLEXBOX
+  CONTROL_PREFIX    = Controls.ControlPrefix     -- ALL THE BUTTONS MUST BE THE SAME PREFIX TO THIS WORK PROPERLY
+  INTERFACE         = Controls.InterfaceName
+  
+  discoveredInterfaces={}
+  currentScrollPosition = 1
+  
+  timer=Timer.New()
+  recurrenceTimer= 0.5
+  
+  comps = Component.GetComponents()
+  for _,comp in pairs(comps) do
+    if string.find(comp.Type,"device_controller_proxy",1,1) then
+      table.insert(discoveredInterfaces,comp.Name)
+    end
+  end
+  INTERFACE.Choices=discoveredInterfaces
+  
+  function updateVisibleItems(startIdx)
+      local endIdx = math.min(startIdx + MAX_VISIBLE_ITEMS.Value - 1, TOTAL_ITEMS.Value)
+      for i = 1, TOTAL_ITEMS.Value do
+          control = Component.New(INTERFACE.String)
+          control[CONTROL_PREFIX.String..i].IsInvisible = not (i >= startIdx and i <= endIdx)
+          if not control.IsInvisible then
+          --    control[CONTROL_PREFIX.String..i].Legend = "Item "..i
+          end
+      end
+  end
+  
+  function setScrollPosition(value)
+      currentScrollPosition = math.max(1, math.min(math.floor(value), maxScrollPosition))
+      scrollMeter.Value = currentScrollPosition
+      scrollBar.Value = currentScrollPosition
+      if not pcall(updateVisibleItems,currentScrollPosition) then
+        print "error: Check Interface Name,Control Prefix and all parameters!"
+      end
+  end
+  
+  function init()
+    maxScrollPosition = TOTAL_ITEMS.Value - MAX_VISIBLE_ITEMS.Value + 1
+    --print("SET THE UCI KNOB PROPERTIES MAX VALUE to "..maxScrollPosition)
+    setScrollPosition(currentScrollPosition)
+  end
+  
+  -- Events
+  scrollUp.EventHandler = function(up)
+      if up.Boolean then 
+        setScrollPosition(currentScrollPosition - 1) 
+        scrollDirection = "up"
+        timer:Start(recurrenceTimer)
+      else
+        timer:Stop()
+      end
+  end
+  
+  scrollDown.EventHandler = function(down)
+      if down.Boolean then 
+        setScrollPosition(currentScrollPosition + 1)
+        scrollDirection = "down"
+        timer:Start(recurrenceTimer)
+      else
+        timer:Stop()
+      end
+  end
+  
+  scrollBar.EventHandler = function() setScrollPosition(scrollBar.Value) end
+  
+  firstPage.EventHandler = function (ev)
+    if ev.Boolean then setScrollPosition(1) end
+  end 
+  
+  lastPage.EventHandler = function (ev)
+    if ev.Boolean then setScrollPosition(maxScrollPosition)end
+  end
+  
+  INTERFACE.EventHandler = function ()
+    init()
+  end
+  
+  CONTROL_PREFIX.EventHandler = function ()
+    init()
+  end
+  
+  MAX_VISIBLE_ITEMS.EventHandler = function ()
+    init()
+  end 
+  
+  TOTAL_ITEMS.EventHandler = function()
+    init()
+  end
+  
+  timer.EventHandler = function ()
+    if scrollDirection == "down" then
+      setScrollPosition(currentScrollPosition + 1)
+    elseif scrollDirection == "up" then
+      setScrollPosition(currentScrollPosition - 1)
+    end
+  end
+  
+  
+  init()
+end
