@@ -5,6 +5,10 @@ This QSYS Plugin implements functionality similar to a dynamic scrollable list i
 
 <img src="/images/scrollex.gif">
 
+⚠️ Beta Notice
+This plugin is currently in beta testing and has not been fully validated in all scenarios. There may be unexpected behavior, bugs, or instability.
+
+Use at your own risk—thoroughly test it in a safe environment before deploying in production. Feedback and issue reports are welcome!
 
 ## Installation
 Click on the .qplug file to add.
